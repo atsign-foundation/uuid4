@@ -13,7 +13,7 @@
 #include <wincrypt.h>
 #endif
 
-#include "uuid4.h"
+#include "uuid4/uuid4.h"
 
 #if (__STDC_VERSION__ >= 201112L)
 _Thread_local
