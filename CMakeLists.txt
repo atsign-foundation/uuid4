@@ -13,7 +13,9 @@ set(UUID4_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/uuid4.c
 )
 
-set(UUID4_HEADERS ${CMAKE_CURRENT_LIST_DIR}/include)
+set(UUID4_HEADERS 
+    ${CMAKE_CURRENT_LIST_DIR}/include
+)
 
 add_library(uuid4-static STATIC ${UUID4_SOURCES})
 add_library(uuid4-shared SHARED ${UUID4_SOURCES})
@@ -53,15 +55,7 @@ install(
 # ==============
 
 # ==============
-# in case we are used as a subproject
-# or FetchContent
-
-export(
-    EXPORT uuid4-config
-    NAMESPACE uuid4::
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/uuid4-config.cmake
-)
-
+# in case we are used as a subdirectory or via FetchContent
 export(
     PACKAGE uuid4
 )
