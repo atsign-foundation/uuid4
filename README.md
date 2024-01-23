@@ -1,8 +1,17 @@
 # uuid4
+
 A tiny C library for generating [uuid4](http://www.ietf.org/rfc/rfc4122.txt)
 strings.
 
-### Usage
+This repo has been forked from [rxi/uuid4](https://github.com/rxi/uuid4)
+in order to:
+
+* achieve greater compatability with the
+[at_c SDK](https://github.com/atsign-foundation/at_c)
+* provide compatability with ESP32
+
+## Usage
+
 [uuid4.c](src/uuid4.c?raw=1) and [uuid4.h](src/uuid4.h?raw=1) should be
 dropped into an existing project. The library contains two functions:
 one to initialize the library and one to generate a uuid4 string and
@@ -17,7 +26,7 @@ printf("%s\n", buf);
 
 `uuid4_generate()` is not thread-safe.
 
-### License
+## License
+
 This library is free software; you can redistribute it and/or modify it
 under the terms of the MIT license. See [LICENSE](LICENSE) for details.
-
