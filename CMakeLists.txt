@@ -66,6 +66,6 @@ export(
     PACKAGE uuid4
 )
 
-# add_library(uuid4-static ALIAS uuid4::uuid4-static)
-# add_library(uuid4-shared ALIAS uuid4::uuid4-shared)
+add_library(uuid4::uuid4-static ALIAS uuid4-static)
+add_library(uuid4::uuid4-shared ALIAS uuid4-shared)
 # ==============
