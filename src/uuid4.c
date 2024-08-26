@@ -13,6 +13,10 @@
 #include <wincrypt.h>
 #endif
 
+#if defined(CONFIG_IDF_TARGET_ESP32)
+#include "esp_random.h"
+#endif
+
 #include "uuid4/uuid4.h"
 
 #if (__STDC_VERSION__ >= 201112L)
@@ -57,6 +61,12 @@ int uuid4_init(void) {
   CryptReleaseContext(hCryptProv, 0);
   if (!res) {
     return UUID4_EFAILURE;
+  }
+
+#elif defined(CONFIG_IDF_TARGET_ESP32)
+  // ESP32 support
+  for (int i = 0; i < sizeof(seed); i++) {
+    seed[i] = esp_random() & 0xFF; // Generate random bytes
   }
 
 #else

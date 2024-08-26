@@ -13,7 +13,6 @@ if(ESP_PLATFORM)
     idf_component_register(
         SRCS ${UUID4_SOURCES}
         INCLUDE_DIRS ${UUID4_INCLUDE_DIR}
-        REQUIRES 
     )
 
     # Copy header files to include directory and libraries to lib directory
