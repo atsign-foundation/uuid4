@@ -64,9 +64,8 @@ int uuid4_init(void) {
   }
 
 #elif defined(CONFIG_IDF_TARGET_ESP32)
-  // ESP32 support
-  for (int i = 0; i < sizeof(seed); i++) {
-    seed[i] = esp_random() & 0xFF; // Generate random bytes
+  for (int i = 0; i < 2; i++) {
+    seed[i] = ((uint64_t)esp_random() << 32) | esp_random(); // Generate random 64-bit values
   }
 
 #else
@@ -74,7 +73,6 @@ int uuid4_init(void) {
 #endif
   return UUID4_ESUCCESS;
 }
-
 
 void uuid4_generate(char *dst) {
   static const char *template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
