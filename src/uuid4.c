@@ -13,6 +13,10 @@
 #include <wincrypt.h>
 #endif
 
+#if defined(CONFIG_IDF_TARGET_ESP32)
+#include "esp_random.h"
+#endif
+
 #include "uuid4/uuid4.h"
 
 #if (__STDC_VERSION__ >= 201112L)
@@ -59,12 +63,16 @@ int uuid4_init(void) {
     return UUID4_EFAILURE;
   }
 
+#elif defined(CONFIG_IDF_TARGET_ESP32)
+  for (int i = 0; i < 2; i++) {
+    seed[i] = ((uint64_t)esp_random() << 32) | esp_random(); // Generate random 64-bit values
+  }
+
 #else
   #error "unsupported platform"
 #endif
   return UUID4_ESUCCESS;
 }
-
 
 void uuid4_generate(char *dst) {
   static const char *template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";

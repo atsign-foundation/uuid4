@@ -1,0 +1,4 @@
+version: "1.0.3"
+description: "uuidv4 library"
+url: "https://github.com/atsign-foundation/uuid4"
+license: "MIT"
