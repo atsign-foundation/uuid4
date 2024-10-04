@@ -8,7 +8,7 @@
 #ifndef UUID4_H
 #define UUID4_H
 
-#define UUID4_VERSION "1.0.0"
+#define UUID4_VERSION "1.0.4"
 #define UUID4_LEN 37
 
 enum {
