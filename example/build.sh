@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc -Wall -Wextra -o example -I../src/ ../src/uuid4.c example.c
+gcc -Wall -Wextra -o example -I../src/ -I../include/ -I../include/uuid4/ ../src/uuid4.c example.c
