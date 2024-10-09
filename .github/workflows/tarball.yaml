@@ -20,7 +20,7 @@ jobs:
           tar -cvzf tarball/uuid4-${{ github.ref_name }}.tar.gz example/ \
             include/ src/ CHANGELOG.md CMakeLists.txt idf_component.yml \
             LICENSE README.md
-      - uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # v4.4.1
+      - uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4.4.2
         with:
           name: uuid4-src-${{github.ref_name}}-${{github.run_number}}-${{github.run_attempt}}
           path: ./tarball/uuid4-${{ github.ref_name }}.tar.gz
