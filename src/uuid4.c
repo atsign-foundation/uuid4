@@ -5,16 +5,21 @@
  * under the terms of the MIT license. See LICENSE for details.
  */
 
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #if defined(_WIN32)
-#include <windows.h>
 #include <wincrypt.h>
+#include <windows.h>
 #endif
 
 #if defined(CONFIG_IDF_TARGET_ESP32)
 #include "esp_random.h"
+#endif
+
+#if defined(TARGET_PORTENTA_H7)
+#include "psa/crypto.h"
+#include "psa/error.h"
 #endif
 
 #include "uuid4/uuid4.h"
@@ -22,8 +27,7 @@
 #if (__STDC_VERSION__ >= 201112L)
 _Thread_local
 #endif
-static uint64_t seed[2];
-
+    static uint64_t seed[2];
 
 static uint64_t xorshift128plus(uint64_t *s) {
   /* http://xorshift.di.unimi.it/xorshift128plus.c */
@@ -35,9 +39,9 @@ static uint64_t xorshift128plus(uint64_t *s) {
   return s[1] + s0;
 }
 
-
 int uuid4_init(void) {
-#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) ||        \
+    defined(__OpenBSD__) || defined(__NetBSD__)
   int res;
   FILE *fp = fopen("/dev/urandom", "rb");
   if (!fp) {
@@ -45,19 +49,19 @@ int uuid4_init(void) {
   }
   res = fread(seed, 1, sizeof(seed), fp);
   fclose(fp);
-  if ( res != sizeof(seed) ) {
+  if (res != sizeof(seed)) {
     return UUID4_EFAILURE;
   }
 
 #elif defined(_WIN32)
   int res;
   HCRYPTPROV hCryptProv;
-  res = CryptAcquireContext(
-    &hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+  res = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL,
+                            CRYPT_VERIFYCONTEXT);
   if (!res) {
     return UUID4_EFAILURE;
   }
-  res = CryptGenRandom(hCryptProv, (DWORD) sizeof(seed), (PBYTE) seed);
+  res = CryptGenRandom(hCryptProv, (DWORD)sizeof(seed), (PBYTE)seed);
   CryptReleaseContext(hCryptProv, 0);
   if (!res) {
     return UUID4_EFAILURE;
@@ -65,11 +69,27 @@ int uuid4_init(void) {
 
 #elif defined(CONFIG_IDF_TARGET_ESP32)
   for (int i = 0; i < 2; i++) {
-    seed[i] = ((uint64_t)esp_random() << 32) | esp_random(); // Generate random 64-bit values
+    seed[i] = ((uint64_t)esp_random() << 32) |
+              esp_random(); // Generate random 64-bit values
   }
 
+#elif defined(TARGET_PORTENTA_H7)
+  size_t n = 16; // 64*2/8 = 16 bytes
+  uint8_t bytes[n];
+  psa_crypto_init();
+  psa_status_t status = psa_generate_random(bytes, n);
+  for (int i = 0; i < 2; i++) {
+    seed[i] = 0;
+    for (int j = 0; j < 8; j++) {
+      seed[i] = (uint64_t)seed[i] | (bytes[i * 8 + j] << (4 * j));
+    }
+  }
+  if (status != PSA_SUCCESS) {
+    return UUID4_EFAILURE;
+  }
+  return UUID4_ESUCCESS;
 #else
-  #error "unsupported platform"
+#error "unsupported platform"
 #endif
   return UUID4_ESUCCESS;
 }
@@ -77,7 +97,10 @@ int uuid4_init(void) {
 void uuid4_generate(char *dst) {
   static const char *template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
   static const char *chars = "0123456789abcdef";
-  union { unsigned char b[16]; uint64_t word[2]; } s;
+  union {
+    unsigned char b[16];
+    uint64_t word[2];
+  } s;
   const char *p;
   int i, n;
   /* get random */
@@ -90,9 +113,16 @@ void uuid4_generate(char *dst) {
     n = s.b[i >> 1];
     n = (i & 1) ? (n >> 4) : (n & 0xf);
     switch (*p) {
-      case 'x'  : *dst = chars[n];              i++;  break;
-      case 'y'  : *dst = chars[(n & 0x3) + 8];  i++;  break;
-      default   : *dst = *p;
+    case 'x':
+      *dst = chars[n];
+      i++;
+      break;
+    case 'y':
+      *dst = chars[(n & 0x3) + 8];
+      i++;
+      break;
+    default:
+      *dst = *p;
     }
     dst++, p++;
   }
