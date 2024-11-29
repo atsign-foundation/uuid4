@@ -68,6 +68,7 @@ int uuid4_init(void) {
   }
 
 #elif defined(CONFIG_IDF_TARGET_ESP32)
+  bootloader_random_enable();
   for (int i = 0; i < 2; i++) {
     seed[i] = ((uint64_t)esp_random() << 32) |
               esp_random(); // Generate random 64-bit values
