@@ -13,14 +13,14 @@ jobs:
     name: Generate source tarball
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Create tarball
         run: |
           mkdir tarball
           tar -cvzf tarball/uuid4-${{ github.ref_name }}.tar.gz example/ \
             include/ src/ CHANGELOG.md CMakeLists.txt idf_component.yml \
             LICENSE README.md
-      - uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # v4.4.1
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: uuid4-src-${{github.ref_name}}-${{github.run_number}}-${{github.run_attempt}}
           path: ./tarball/uuid4-${{ github.ref_name }}.tar.gz
@@ -38,7 +38,7 @@ jobs:
       attestations: write
     steps:
       - name: Download all the tarballs
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: tarballs/
       - name: Move packages for signing
@@ -60,7 +60,7 @@ jobs:
         working-directory: tarballs
         run: |
           echo "hashes=$(cat checksums.txt | base64 -w0)" >> "$GITHUB_OUTPUT"
-      - uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
+      - uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-path: "tarballs/**"
 
@@ -70,7 +70,7 @@ jobs:
       actions: read # Needed for detection of GitHub Actions environment.
       id-token: write # Needed for provenance signing and ID
       contents: write # Needed for release uploads
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0 # 5a775b367a56d5bd118a224a811bba288150a563
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0 # 5a775b367a56d5bd118a224a811bba288150a563
     with:
       base64-subjects: "${{ needs.github-release.outputs.hashes }}"
       upload-assets: true
